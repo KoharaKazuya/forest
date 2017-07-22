@@ -1,0 +1,34 @@
+language: rust
+
+matrix:
+  include:
+    - os: osx
+      rust: stable
+      env: TARGET=x86_64-apple-darwin
+    - os: linux
+      rust: stable
+      env: TARGET=x86_64-unknown-linux-gnu
+
+script:
+  - cargo test  --verbose
+  - cargo build --verbose --release
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+
+before_deploy:
+  - cargo build --target $TARGET --release
+  - mkdir "forest-${TRAVIS_TAG}-${TARGET}"
+  - cp target/$TARGET/release/forest LICENSE README.md "forest-${TRAVIS_TAG}-${TARGET}"
+  - zip "forest-${TRAVIS_TAG}-${TARGET}.zip" -r "forest-${TRAVIS_TAG}-${TARGET}"
+
+deploy:
+  provider: releases
+  api_key:
+    secure: Y8SEKBa74Wp/lJH1dyWXw20o00rjGoSlhU4IIs6KTSN/aXtkH+lkZu2Zgsg3HbJKXTGxFnVHT9Hl7EPXAUJWIodvvUMgZ+vTftXLrL7Mbk4p4UPJ868nrBZCxGRiPXihOlwuvS4yc1ZjRgvUThYaabcrM8z0ybm00SstBfPq0Sv8uSwGCT6Zz44+SoRw+BkRvWDMbKyzPtqoacXD8/zrEN3jRNihMlph2PJGrEdoJ9IbuCjPlQI7D9afIH2uKR0aDPhsPnc0Az1SBcsWj5muusGUO4SHsvelYSRrA+rGGdhvry/CTuGFHnE29r5+Z3IKxW41xpwErmii01c2K/tR3PnCpXGG0cI1MsgxiOj4JLM+DLnnQMsEwDc1BPW0inlZ8cYh5ZZMaQsqjM1YTqIXcWmGDOKsg1CxkDn1rf/zSXuzFBR+3YtDrFFNq4geL7ysRrZC6+BXjG9cPgtQb9lXnSchC2b+/BvQYcx6GGvQiGbOAw8FZt7Q8Y5NfZeJM0m8IRYM4QfbKwXi753XAIVWOJRfeTi83DOoO96z5m5r4xxPsHFjeN21joPrnq93QdCaHg2Wj920kKXH8bmhmNkPpQeZcD5l2Lg5r4wyEogEznf/G9RQaftGKm8q0qsr+Cygs6DVoeK1HlA8zSHJ6oq5WWhV+z8bAZGS5OUhqGBhDPs=
+  file: "forest-${TRAVIS_TAG}-${TARGET}.zip"
+  skip_cleanup: true
+  on:
+    tags: true
