@@ -1,25 +1,29 @@
 language: rust
+cache: cargo
 
 matrix:
   include:
     - os: osx
       rust: stable
       env: TARGET=x86_64-apple-darwin
+      script:
+        - cargo test  --verbose
+        - cargo build --verbose --release --target $TARGET
     - os: linux
+      sudo: required
+      services:
+        - docker
       rust: stable
-      env: TARGET=x86_64-unknown-linux-gnu
-
-script:
-  - cargo test  --verbose
-  - cargo build --verbose --release
-
-notifications:
-  email:
-    on_success: never
-    on_failure: change
+      env: TARGET=x86_64-unknown-linux-musl
+      script:
+        - echo $(pwd)
+        - sudo chown -R 1000:1000 .
+        - ls -la $(pwd)/target
+        - docker run --rm -it -v "$(pwd)":/home/rust/src ekidd/rust-musl-builder cargo test  --verbose
+        - docker run --rm -it -v "$(pwd)":/home/rust/src ekidd/rust-musl-builder cargo build --verbose --release --target $TARGET
+        - sudo chown -R travis:travis .
 
 before_deploy:
-  - cargo build --target $TARGET --release
   - mkdir "forest-${TRAVIS_TAG}-${TARGET}"
   - cp target/$TARGET/release/forest LICENSE README.md "forest-${TRAVIS_TAG}-${TARGET}"
   - zip "forest-${TRAVIS_TAG}-${TARGET}.zip" -r "forest-${TRAVIS_TAG}-${TARGET}"
