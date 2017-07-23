@@ -2,6 +2,55 @@
 
 [![Build Status](https://travis-ci.org/KoharaKazuya/forest.svg?branch=master)](https://travis-ci.org/KoharaKazuya/forest)
 
+forest は行指向で構造化された木構造を表すテキストを整形して出力するコマンド。
+
+
+## 例
+
+(sample1.txt)
+
+```
+pattern1_root
+pattern1_root/pattern2_last_leaf
+root_node
+root_node/pattern3_non-last_leaf
+root_node/pattern3_non-last_leaf/sample
+root_node/pattern3_non-last_leaf/pattern4_non-last_node's_child
+root_node/leaf_node
+```
+
+```console
+$ cat sample1.txt | forest
+├ ─ pattern1_root
+│   └ ─ /pattern2_last_leaf
+└ ─ root_node
+    ├ ─ /pattern3_non-last_leaf
+    │   ├ ─ /sample
+    │   └ ─ /pattern4_non-last_node's_child
+    └ ─ /leaf_node
+```
+
+(sample2.txt)
+
+```
+サ
+サン
+サンプル
+forest
+forest doesn't specify any characters
+forest doesn't specify any characters as separater.
+```
+
+```console
+$ cat sample2.txt | forest
+├ ─ サ
+│   └ ─ ン
+│       └ ─ プル
+└ ─ forest
+    └ ─  doesn't specify any characters
+        └ ─  as separator.
+```
+
 
 ## アルゴリズム
 
