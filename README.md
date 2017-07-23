@@ -52,6 +52,18 @@ $ cat sample2.txt | forest
 ```
 
 
+## ダウンロード
+
+<https://github.com/KoharaKazuya/forest/releases>
+
+
+## forest がなぜ必要か
+
+考えられる用途としては tree コマンドや ps --forest オプションで十分だが、単機能として分離しておくと柔軟に組み合わせられるため。
+
+find コマンドの柔軟な検索結果を forest で整形表示するなど。
+
+
 ## アルゴリズム
 
 アルゴリズムを擬似コードで示す。
